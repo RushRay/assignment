@@ -1,5 +1,5 @@
 # assignment
-
+本项目为个人前端VUE大作业，仅供参考
 ## Project setup
 ```
 npm install
