@@ -3,18 +3,62 @@ import HomeView from '../views/HomeView.vue'
 
 const routes = [
   {
-    path: '/',
+    pant: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: {
+      showTabBar: true
+    }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/me',
+    name: 'me',
+    component: () => import('../views/MeView.vue'),
+    meta: {
+      showTabBar: true
+    }
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('../views/SearchView'),
+    meta: {
+      showTabBar: false
+    }
+  },
+  {
+    path: '/article',
+    name: 'article',
+    component: () => import('../views/ArticleView'),
+    meta: {
+      showTabBar: false
+    }
+  },
+  {
+    path: '/message',
+    name: 'message',
+    component: () => import('../views/MessageView'),
+    meta: {
+      showTabBar: true
+    }
+  },
+  {
+    path: '/shopping',
+    name: 'shopping',
+    component: () => import('../views/ShoppingView'),
+    meta: {
+      showTabBar: true
+    }
+  },
+  {
+    path: '/setting',
+    name: 'setting',
+    meta: {
+      showTabBar: false
+    },
+    component: () => import('../views/SettingView')
   }
+
 ]
 
 const router = createRouter({
