@@ -11,14 +11,24 @@
     <van-cell-group>
       <van-cell center title="头像">
         <template #value>
-<!--          <img :src="userInfo.imgUrl" alt="">-->
           <van-uploader :after-read="onRead" multiple :max-count="1">
-            <img :src="userInfo.imgUrl">
+            <img :src="userInfo.imgUrl" alt="">
           </van-uploader>
         </template>
       </van-cell>
-      <van-cell title="设置昵称" value="31901124" />
-      <van-cell title="设置签名" />
+      <van-cell title="设置昵称" >
+        <template #value>
+          <input style="border-color: white; border-style: dashed" :placeholder="userInfo.nickname" v-model="data.userNickname"
+                 @keydown.enter="updateNickname">
+        </template>
+      </van-cell>
+      <van-cell title="设置签名" >
+        <template #value>
+          <input style="border-color: white; border-style: dashed" :placeholder="userInfo.sign" v-model="data.userSign"
+          @keydown.enter="updateSign">
+<!--          <button @click="updateSign" style="width: 100%;height: 3px"/>-->
+        </template>
+      </van-cell>
     </van-cell-group>
   </div>
 </template>
@@ -26,19 +36,37 @@
 <script>
 import store from "@/store";
 import axios from 'axios'
+import {onMounted, reactive} from "vue";
 
 export default {
   setup() {
+    const data = reactive({
+      userSign: "",
+      userNickname: ""
+    })
     const userInfo = store.state.userInfo
+    onMounted(() => {
+      let user = {
+        username: userInfo.username
+      }
+      axios({
+        method: 'get',
+        url: 'http://localhost:3000/api/user/find',
+        params: user
+      }).then(res => {
+        console.log(res.data)
+        userInfo.imgUrl = res.data[0].avaUrl
+        userInfo.sign = res.data[0].sign
+        userInfo.nickname = res.data[0].nickName
+        store.state.userInfo.imgUrl = res.data[0].avaUrl
+        store.state.userInfo.sign = res.data[0].sign
+        store.state.userInfo.nickname = res.data[0].nickName
+      })
+    })
     const onRead = (file) => {
-      // console.log(file)
       let formData = new FormData()
       formData.append('avatar', file.file)
       formData.append('username', userInfo.username)
-      // console.log(formData)
-      // axios({
-      //
-      // })
       axios.post('http://localhost:3000/api/user/upload', formData, {
         headers: {
           'enctype': 'multipart/form-data'
@@ -57,18 +85,42 @@ export default {
           userInfo.imgUrl = res.data[0].avaUrl
           store.state.userInfo.imgUrl = res.data[0].avaUrl
         })
-        // axios.get('http://localhost:3000/api/user/find', user).then(
-        //     res => {
-        //       console.log(res.data)
-        //       // userInfo.imgUrl = res.data.avaUrl
-        //       // store.state.userInfo.imgUrl = res.data.avaUrl
-        //     }
-        // )
+      })
+    }
+    const updateNickname = () => {
+      let user = {
+        username: userInfo.username,
+        nickName: data.userNickname
+      }
+      userInfo.nickname = user.nickName
+      store.state.userInfo.nickname = user.nickName
 
+      axios({
+        method: 'post',
+        url: 'http://localhost:3000/api/user/updateNickName',
+        params: user
+      })
+    }
+    const updateSign = () => {
+      let user = {
+        username: userInfo.username,
+        sign: data.userSign
+      }
+      console.log(user)
+      userInfo.sign = user.sign
+      store.state.userInfo.sign = user.sign
+      axios({
+        method: 'post',
+        url: 'http://localhost:3000/api/user/updateSign',
+        params: user
       })
     }
     return{
-      userInfo, onRead
+      userInfo,
+      onRead,
+      data,
+      updateSign,
+      updateNickname
     }
   }
 }
